@@ -1,9 +1,19 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import { Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons/';
+import { Feather as Icon, AntDesign as FAIcon } from '@expo/vector-icons/';
 
 
 function Post({ post,navigation }) {
+    console.log(post);
+
+    const handleLike = ()=>{
+        console.log("You Like this post",post.id);
+    }
+
+
+    const handleDislike= ()=>{
+        console.log("You dislike this post ",post.id);
+    }
 
     function getRandomImage() {
         let max = 100;
@@ -21,22 +31,23 @@ function Post({ post,navigation }) {
                     <Image
                         style={{ width: 50, height: 50, borderRadius: 100 }}
                         source={{
-                            uri: post.userProfileImage,
+                            uri: `http://192.168.1.100:8000${post.user.profile_pic}/`,
                         }}
                     />
                 </View>
                 <View style={{ flex: 1, paddingHorizontal: 10 }}>
                     <Text style={{ color: '#fff', fontFamily: 'NSBold', fontSize: 18 }}>
-                        {post.name}
+                        {post.user.username}
                     </Text>
                     <Text
                         style={{ color: '#fff', fontFamily: 'NSRegular', fontSize: 16 }}
                     >
-                        {post.username}
+                        {post.user.username}
                     </Text>
                 </View>
                 <TouchableOpacity>
                     <Icon name='more-horizontal' color='#fff' size={28} />
+                    
                 </TouchableOpacity>
             </View>
             {/* Post Content */}
@@ -49,7 +60,7 @@ function Post({ post,navigation }) {
                         paddingHorizontal: 10,
                     }}
                 >
-                    {post.postText}
+                    {post.content}
                 </Text>
                 {post.postImage ? (
                     <Image
@@ -62,8 +73,8 @@ function Post({ post,navigation }) {
             <View
                 style={{ marginTop: 10, flexDirection: 'row', paddingHorizontal: 10 }}
             >
-                <TouchableOpacity style={styles.postStatsOpacity}>
-                    <Icon name='heart' color='#fff' size={16} />
+                <TouchableOpacity style={styles.postStatsOpacity} onPress={handleLike}>
+                <FAIcon name='like2' color="#fff" size={20}/>
                     <Text
                         style={{
                             marginLeft: 6,
@@ -72,6 +83,25 @@ function Post({ post,navigation }) {
                         }}
                     >
                         {post.likes}
+                        111
+                        
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity     style={{
+                    ...styles.postStatsOpacity,
+                    marginLeft: 10,
+                }} onPress={handleDislike}>
+                <FAIcon name='dislike2' color="#fff" size={20}/>
+                    <Text
+                        style={{
+                            marginLeft: 6,
+                            fontFamily: 'NSRegular',
+                            color: '#fff',
+                        }}
+                    >
+                        {post.likes}
+                        122
+                        
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -82,16 +112,25 @@ function Post({ post,navigation }) {
                     onPress={()=>navigation.navigate("comment")}
                 >
                     <Icon name='message-circle' color='#fff' size={16} />
-                    <Text
+
+                    {
+                        post.comment_count>0?(
+                            <Text
                         style={{
                             marginLeft: 6,
                             fontFamily: 'NSRegular',
                             color: '#fff',
                         }}
                     >
-                        {post.comments}
+                        {post.comment_count}
                     </Text>
+                        ) :
+                        <Text></Text>
+                    }
+                   
+                    
                 </TouchableOpacity>
+             
             </View>
         </View>
     );

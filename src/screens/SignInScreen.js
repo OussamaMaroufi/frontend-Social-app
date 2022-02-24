@@ -34,7 +34,7 @@ export default function SignInScreen({ navigation }) {
 
   const userLogin = useSelector(state => state.userLogin)
   const { error, loading, userInfo } = userLogin
-  console.log("dddkkk",userInfo);
+  // console.log("dddkkk",userInfo);
 
   const handleSubmit = (e) => {
     e.preventDefault();

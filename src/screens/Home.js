@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     StyleSheet,
     Text,
@@ -9,6 +9,7 @@ import {
     ScrollView,
     ActivityIndicator,
     StatusBar,
+
 } from 'react-native';
 import { useFonts } from 'expo-font';
 
@@ -19,8 +20,14 @@ import NSExtraBold from '../../assets/fonts/Nunito-ExtraBold.ttf';
 
 import { Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons/';
 import Post from "../components/Post";
+import { useSelector, useDispatch } from 'react-redux'
+import { listPosts } from '../actions/postActions'
 
 function Home({ navigation }) {
+
+    const auth = useSelector((state) => state.userLogin)
+    // console.log("fddd",auth.userInfo["username"]);
+
 
     const [loaded] = useFonts({
         NSLight,
@@ -29,44 +36,18 @@ function Home({ navigation }) {
         NSExtraBold,
     });
 
-    const [currentUser] = useState({
-        profile_image: 'https://randomuser.me/api/portraits/men/73.jpg',
-    });
 
-    const [posts] = useState([
-        {
-            id: 1,
-            name: 'John Doe',
-            username: 'johndoe',
-            userProfileImage: 'https://randomuser.me/api/portraits/men/26.jpg',
-            postText:
-                'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio facilis maiores iusto possimus praesentium reprehenderit, illum corrupti perspiciatis aperiam qui.',
-            likes: 245,
-            comments: 19,
-        },
-        {
-            id: 2,
-            name: 'Adam Walker',
-            username: 'adam_walker16',
-            userProfileImage: 'https://randomuser.me/api/portraits/men/71.jpg',
-            postText: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit.',
-            postImage:
-                'https://images.pexels.com/photos/4881622/pexels-photo-4881622.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-            likes: 132,
-            comments: 26,
-        },
-        {
-            id: 3,
-            name: 'Hailey Diaz',
-            username: 'hailey192',
-            userProfileImage: 'https://randomuser.me/api/portraits/women/73.jpg',
-            postText: 'Lorem ipsum 🐶',
-            postImage:
-                'https://images.pexels.com/photos/2691779/pexels-photo-2691779.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-            likes: 459,
-            comments: 133,
-        },
-    ]);
+
+    const dispatch = useDispatch();
+    const { loading, posts, error } = useSelector((state) => state.postList)
+    const handleList = () => {
+        dispatch(listPosts())
+    }
+    useEffect(() => {
+        handleList()
+
+    }, [dispatch])
+
 
     function getRandomImage() {
         let max = 100;
@@ -78,73 +59,84 @@ function Home({ navigation }) {
         return url;
     }
 
-    if (!loaded) {
-        console.log(loaded);
+
+    if (loading) {
         return (
-            <View>
-                <ActivityIndicator size='large' />
+            <View style={styles.container}>
+                <ActivityIndicator size='large' color="red" />
             </View>
-        );
+        )
+    } else {
+        return (
+
+
+            <View style={styles.container}>
+                <ScrollView>
+                    {/* Search Bar View */}
+                    <View style={styles.searchBarView}>
+                        <View style={styles.searchBar}>
+                            <Icon name='search' size={22} color='#c1c1c1' />
+                            <TextInput
+                                style={{
+                                    paddingHorizontal: 6,
+                                    color: '#c1c1c1',
+                                    fontFamily: 'NSRegular',
+                                    fontSize: 16,
+                                    width: "93%"
+
+                                }}
+                                placeholder='Search'
+                                placeholderTextColor='#c1c1c1'
+                                onFocus={() => navigation.navigate('search')}
+                            />
+                        </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('settings')}>
+                            <Icon name="settings" color="#fff" size={25} />
+                        </TouchableOpacity>
+                    </View>
+                    {/* Stories View */}
+                    <View style={styles.storiesView}>
+                        <View style={styles.storiesViewTitleView}>
+                            <Text style={styles.storiesViewTitle}>Stories</Text>
+                            <Text style={styles.showAllText}>Show all</Text>
+                        </View>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                                {Array(10)
+                                    .fill(0)
+                                    .map((s) => (
+
+                                        <TouchableOpacity key={Math.random() * 10} style={styles.storyUserProfile}>
+                                            <Image
+                                                style={styles.storyUserProfileImage}
+                                                source={{ uri: getRandomImage() }}
+                                            />
+                                        </TouchableOpacity>
+                                    ))}
+                            </View>
+                        </ScrollView>
+                    </View>
+                    {/* Posts View */}
+                    <View style={styles.postsView}>
+                        {posts.map((post) => (
+                            <View key={post.id}>
+                                <Post post={post} navigation={navigation} />
+                            </View>
+                        ))}
+                    </View>
+                    <View style={{ height: 20 }}></View>
+                </ScrollView>
+            </View>
+        )
     }
-    return (
-        <View style={styles.container}>
-            <ScrollView>
-                {/* Search Bar View */}
-                <View style={styles.searchBarView}>
-                    <View style={styles.searchBar}>
-                        <Icon name='search' size={22} color='#c1c1c1' />
-                        <TextInput
-                            style={{
-                                paddingHorizontal: 6,
-                                color: '#c1c1c1',
-                                fontFamily: 'NSRegular',
-                                fontSize: 16,
-                                width: "93%"
 
-                            }}
-                            placeholder='Search'
-                            placeholderTextColor='#c1c1c1'
-                            onFocus={() =>navigation.navigate('search')}
-                        />
-                    </View>
-                    <TouchableOpacity onPress={()=>navigation.navigate('settings')}>
-                      <Icon name="settings" color="#fff" size={25}/>
-                    </TouchableOpacity>
-                </View>
-                {/* Stories View */}
-                <View style={styles.storiesView}>
-                    <View style={styles.storiesViewTitleView}>
-                        <Text style={styles.storiesViewTitle}>Stories</Text>
-                        <Text style={styles.showAllText}>Show all</Text>
-                    </View>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                            {Array(10)
-                                .fill(0)
-                                .map((s) => (
 
-                                    <TouchableOpacity key={Math.random() * 10} style={styles.storyUserProfile}>
-                                        <Image
-                                            style={styles.storyUserProfileImage}
-                                            source={{ uri: getRandomImage() }}
-                                        />
-                                    </TouchableOpacity>
-                                ))}
-                        </View>
-                    </ScrollView>
-                </View>
-                {/* Posts View */}
-                <View style={styles.postsView}>
-                    {posts.map((post) => (
-                        <View key={post.id}>
-                            <Post post={post} navigation={navigation} />
-                        </View>
-                    ))}
-                </View>
-                <View style={{ height: 20 }}></View>
-            </ScrollView>
-        </View>
-    );
+
+
+
+
+
+
 }
 
 export default Home;

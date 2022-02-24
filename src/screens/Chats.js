@@ -18,8 +18,9 @@ import NSLight from '../../assets/fonts/Nunito-Light.ttf'
 import NSRegular from '../../assets/fonts/Nunito-Regular.ttf'
 import NSBold from '../../assets/fonts/Nunito-Bold.ttf'
 import NSExtraBold from '../../assets/fonts/Nunito-ExtraBold.ttf';
+import Searchbar from '../components/SearchBar';
 
-function Chats({navigation}) {
+function Chats({ navigation }) {
 
     const [loaded] = useFonts({
         NSLight,
@@ -164,32 +165,42 @@ function Chats({navigation}) {
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
 
-        
-        <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: 10 ,backgroundColor:"#333",paddingVertical:5}}>
 
-            <View style={styles.storiesView}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                        {Array(10)
-                            .fill(0)
-                            .map((s) => (
+            <View style={{ flex: 1 }}>
 
-                                <TouchableOpacity key={Math.random() * 10} style={styles.storyUserProfile}>
-                                    <Image
-                                        style={styles.storyUserProfileImage}
-                                        source={{ uri: getRandomImage() }}
-                                    />
-                                </TouchableOpacity>
-                            ))}
+                {/*View to display stories */}
+                <View style={{ marginTop: 15, backgroundColor: "#333", paddingVertical: 5 }}>
+
+                    <View style={styles.storiesView}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View style={{ flexDirection: 'row', marginTop: 0 }}>
+                                {Array(10)
+                                    .fill(0)
+                                    .map((s) => (
+
+                                        <TouchableOpacity key={Math.random() * 10} style={styles.storyUserProfile}>
+                                            <Image
+                                                style={styles.storyUserProfileImage}
+                                                source={{ uri: getRandomImage() }}
+                                            />
+                                        </TouchableOpacity>
+                                    ))}
+                            </View>
+                        </ScrollView>
                     </View>
-                </ScrollView>
-            </View>
-        </View>
-        <View style={{ paddingHorizontal: 4, marginTop: 3, backgroundColor: '#1f1f1f', }}>
-        {messages.map((chat) => (
-            <TouchableOpacity
-            key={chat.time}
+                </View>
+                {/* Here view of search bar */}
+
+                <View style={{backgroundColor:"#333"}}>
+                   <Searchbar/>
+                </View>
+
+                {/*View to display chats */}
+
+                <View style={{  marginTop: 0, backgroundColor: '#1f1f1f', }}>
+                    {messages.map((chat) => (
+                        <TouchableOpacity
+                            key={chat.time}
                             style={{
                                 marginTop: 0,
                                 paddingHorizontal: 8,
@@ -197,7 +208,7 @@ function Chats({navigation}) {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 backgroundColor: '#333',
-                         
+
 
                             }}
                             onLongPress={() => {
@@ -223,7 +234,7 @@ function Chats({navigation}) {
                                     { cancelable: false }
                                 );
                             }}
-                            onPress={()=>navigation.navigate("Room")}
+                            onPress={() => navigation.navigate("Room")}
                         >
                             <TouchableOpacity>
                                 {/*Here we set image of user  to redirect to user profile  */}
@@ -323,13 +334,13 @@ export default Chats;
 const styles = StyleSheet.create({
     storiesView: {
         paddingHorizontal: 8,
-        marginTop: 12,
+        marginTop: 14,
     },
     storyUserProfile: {
-        marginRight: 10,
+        marginRight: 8,
         borderColor: '#B53471',
         borderWidth: 2.5,
         borderRadius: 100,
     },
-    storyUserProfileImage: { width: 60, height: 60, borderRadius: 100 },
+    storyUserProfileImage: { width: 70, height: 70, borderRadius: 100 },
 })

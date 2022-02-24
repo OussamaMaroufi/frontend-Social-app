@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, TextInput,Text } from 'react-native';
 import { Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons/';
 
 
 const Searchbar = () => {
 
-    const [currentUser] = useState({
-        profile_image: 'https://randomuser.me/api/portraits/men/73.jpg',
-    });
+ 
     return (
         <View style={styles.searchBarView}>
             <View style={styles.searchBar}>
@@ -39,7 +37,7 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         flexDirection: 'row',
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
     },
     searchBar: {
         flex: 1,
@@ -50,11 +48,6 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    userProfileImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 100,
     },
 
 })
