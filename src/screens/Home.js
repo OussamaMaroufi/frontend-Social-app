@@ -60,7 +60,9 @@ function Home({ navigation }) {
     }
 
 
-    if (loading) {
+
+
+    if (loading & !loaded) {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size='large' color="red" />

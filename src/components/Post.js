@@ -1,14 +1,17 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { Feather as Icon, AntDesign as FAIcon } from '@expo/vector-icons/';
-
-
+import formatDate from '../utilities/formatDate'
+import {useRoute} from '@react-navigation/native';
 function Post({ post,navigation }) {
     console.log(post);
+    const route = useRoute();
+    console.log(route);
 
     const handleLike = ()=>{
         console.log("You Like this post",post.id);
     }
+
 
 
     const handleDislike= ()=>{
@@ -34,6 +37,8 @@ function Post({ post,navigation }) {
                             uri: `http://192.168.1.100:8000${post.user.profile_pic}/`,
                         }}
                     />
+                    {/*Display Time created */}
+                
                 </View>
                 <View style={{ flex: 1, paddingHorizontal: 10 }}>
                     <Text style={{ color: '#fff', fontFamily: 'NSBold', fontSize: 18 }}>
@@ -45,10 +50,14 @@ function Post({ post,navigation }) {
                         {post.user.username}
                     </Text>
                 </View>
-                <TouchableOpacity>
-                    <Icon name='more-horizontal' color='#fff' size={28} />
+                
+                <View>
                     
-                </TouchableOpacity>
+                <Text style={{color:"#fff"}} >{formatDate.distanceDate(post.created)}</Text>
+                    <TouchableOpacity>
+                    <Icon name='more-horizontal' color='#fff' size={28} style={{alignSelf:"flex-end"}} />
+                    </TouchableOpacity>
+                </View>
             </View>
             {/* Post Content */}
             <View style={{ marginTop: 10 }}>
@@ -62,15 +71,15 @@ function Post({ post,navigation }) {
                 >
                     {post.content}
                 </Text>
-                {post.postImage ? (
+                {post.image ? (
                     <Image
                         style={{ width: '100%', height: 300, marginTop: 10 }}
-                        source={{ uri: post.postImage }}
+                        source={{ uri:  `http://192.168.1.100:8000${post.image}/`, }}
                     />
                 ) : null}
             </View>
             {/* Post Stats */}
-            <View
+             <View
                 style={{ marginTop: 10, flexDirection: 'row', paddingHorizontal: 10 }}
             >
                 <TouchableOpacity style={styles.postStatsOpacity} onPress={handleLike}>
@@ -104,34 +113,37 @@ function Post({ post,navigation }) {
                         
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={{
-                        ...styles.postStatsOpacity,
-                        marginLeft: 10,
-                    }}
-                    onPress={()=>navigation.navigate("comment")}
-                >
-                    <Icon name='message-circle' color='#fff' size={16} />
 
-                    {
-                        post.comment_count>0?(
-                            <Text
-                        style={{
-                            marginLeft: 6,
-                            fontFamily: 'NSRegular',
-                            color: '#fff',
-                        }}
-                    >
-                        {post.comment_count}
-                    </Text>
-                        ) :
-                        <Text></Text>
-                    }
-                   
-                    
-                </TouchableOpacity>
+                {route.name == "home" && <TouchableOpacity
+                style={{
+                    ...styles.postStatsOpacity,
+                    marginLeft: 10,
+                }}
+                onPress={()=>navigation.navigate("comment",{post})}
+            >
+                <Icon name='message-circle' color='#fff' size={16} />
+
+                {
+                    post.comment_count>0?(
+                        <Text
+                    style={{
+                        marginLeft: 6,
+                        fontFamily: 'NSRegular',
+                        color: '#fff',
+                    }}
+                >
+                    {post.comment_count}
+                </Text>
+                    ) :
+                    <Text></Text>
+                }
+               
+                
+            </TouchableOpacity> }
+                
              
-            </View>
+            </View> 
+           
         </View>
     );
 }
