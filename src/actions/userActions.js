@@ -10,6 +10,18 @@ import {
     USER_REGISTER_SUCCESS,
     USER_REGISTER_FAIL,
 
+    USER_LIST_REQUEST,
+    USER_LIST_SUCCESS,
+    USER_LIST_FAIL,
+    USER_POSTS_LIST_REQUEST,
+    USER_POSTS_LIST_SUCCESS,
+    USER_POSTS_LIST_FAIL,
+    USER_FOLLOW_REQUEST,
+    USER_FOLLOW_SUCCESS,
+    USER_FOLLOW_FAIL
+
+
+
 } from "../constants/userConstants";
 
 import * as SecureStore from 'expo-secure-store';
@@ -46,7 +58,7 @@ export const login = (loginCredentials) => async (dispatch) => {
         })
 
         //Here data is stored in secure store 
-        save('userInfo',JSON.stringify(data))
+        save('userInfo', JSON.stringify(data))
 
     } catch (error) {
         dispatch({
@@ -104,3 +116,113 @@ export const register = (inputs) => async (dispatch) => {
         })
     }
 }
+
+//This  Action to Handle Listing users 
+
+
+
+export const listUsers = (q = '') => async (dispatch, getState) => {
+
+
+    try {
+        dispatch({ type: USER_LIST_REQUEST })
+
+        const {
+            userLogin: { userInfo },
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.access}`
+            }
+        }
+
+        const { data } = await axios.get(`http://192.168.1.100:8000/api/users/?q=${q}`, config)
+
+
+        dispatch({
+            type: USER_LIST_SUCCESS,
+            payload: data
+        })
+
+    } catch (error) {
+        dispatch({
+            type: USER_LIST_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}
+
+//THis Action To list User Posts
+
+
+export const listUserPosts = (username) => async (dispatch) => {
+    console.log("This function trigged ");
+
+    try {
+        dispatch({ type: USER_POSTS_LIST_REQUEST })
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+
+            }
+        }
+
+        const { data } = await axios.get(`http://192.168.1.100:8000/api/users/${username}/posts/`, config)
+
+
+        dispatch({
+            type: USER_FOLLOW_SUCCESS,
+            payload: data
+        })
+
+    } catch (error) {
+
+        dispatch({
+            type: USER_POSTS_LIST_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}
+
+
+//This Action  to handle following 
+export const followUser = (username) => async (dispatch) => {
+    console.log("This function trigged ");
+
+    try {
+        dispatch({ type: USER_FOLLOW_REQUEST })
+
+     
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.access}`
+            }
+        }
+
+        const { data } = await axios.post(`http://192.168.1.100:8000/api/users/${username}/follow/`, config)
+
+
+        dispatch({
+            type: USER_POSTS_LIST_SUCCESS,
+            payload: data
+        })
+
+    } catch (error) {
+
+        dispatch({
+            type: USER_FOLLOW_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}
+

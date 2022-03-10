@@ -1,9 +1,12 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, TextInput,Text } from 'react-native';
 import { Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons/';
 
 
-const Searchbar = () => {
+const Searchbar = ({setSearchText}) => {
+
+    
+
 
  
     return (
@@ -19,6 +22,7 @@ const Searchbar = () => {
                     }}
                     placeholder='Search'
                     placeholderTextColor='#c1c1c1'
+                    onChangeText={(val)=>setSearchText(val)}
                 />
             </View>
         

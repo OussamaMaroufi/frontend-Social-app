@@ -1,0 +1,159 @@
+// App.js
+import React,{useState} from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Button, Image } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
+ const  AddImageScreen =() => {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       resourcePath: {},
+//     };
+//   }
+
+const [state,setState] = useState({})
+  const selectFile = () => {
+    var options = {
+      title: 'Select Image',
+      customButtons: [
+        { 
+          name: 'customOptionKey', 
+          title: 'Choose file from Custom Option' 
+        },
+      ],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.showImagePicker(options, res => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        let source = res;
+        setState({
+          resourcePath: source,
+        });
+      }
+    });
+  };
+  // Launch Camera
+  const cameraLaunch = () => {
+      console.log("clicked");
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchCamera(options, (res) => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        const source = { uri: res.uri };
+        console.log('response', JSON.stringify(res));
+        setState({
+          filePath: res,
+          fileData: res.data,
+          fileUri: res.uri
+        });
+      }
+    });
+  }
+  const imageGalleryLaunch = () => {
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchImageLibrary(options, (res) => {
+      console.log('Response = ', res);
+      if (res.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (res.error) {
+        console.log('ImagePicker Error: ', res.error);
+      } else if (res.customButton) {
+        console.log('User tapped custom button: ', res.customButton);
+        alert(res.customButton);
+      } else {
+        const source = { uri: res.uri };
+        console.log('response', JSON.stringify(res));
+        setState({
+          filePath: res,
+          fileData: res.data,
+          fileUri: res.uri
+        });
+      }
+    });
+  }  
+  
+    return (
+      <View style={styles.container}>
+        <View style={styles.container}>
+          <Image
+            source={{
+              uri: 'data:image/jpeg;base64,' + state.data,
+            }}
+            style={{ width: 100, height: 100 }}
+          />
+          <Image
+            source={{ uri: state.uri }}
+            style={{ width: 200, height: 200 }}
+          />
+          <Text style={{ alignItems: 'center' }}>
+            {state.uri}
+          </Text>
+          <TouchableOpacity onPress={selectFile} style={styles.button}  >
+              <Text style={styles.buttonText}>Select File</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>console.log('clicked')} style={styles.button}  >
+              <Text style={styles.buttonText}>Launch Camera Directly</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={imageGalleryLaunch} style={styles.button}  >
+              <Text style={styles.buttonText}>Launch Image Gallery Directly</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+
+}
+
+export default AddImageScreen;
+
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
+  },
+  button: {
+    width: 250,
+    height: 60,
+    backgroundColor: '#3740ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+    marginBottom:12    
+  },
+  buttonText: {
+    textAlign: 'center',
+    fontSize: 15,
+    color: '#fff'
+  }
+});

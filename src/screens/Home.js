@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useCallback} from "react";
 import {
     StyleSheet,
     Text,
@@ -9,9 +9,11 @@ import {
     ScrollView,
     ActivityIndicator,
     StatusBar,
+    RefreshControl,
 
 } from 'react-native';
 import { useFonts } from 'expo-font';
+import * as Font from 'expo-font';
 
 import NSLight from '../../assets/fonts/Nunito-Light.ttf'
 import NSRegular from '../../assets/fonts/Nunito-Regular.ttf'
@@ -22,31 +24,55 @@ import { Feather as Icon, FontAwesome as FAIcon } from '@expo/vector-icons/';
 import Post from "../components/Post";
 import { useSelector, useDispatch } from 'react-redux'
 import { listPosts } from '../actions/postActions'
+import { useRoute } from '@react-navigation/native';
+
 
 function Home({ navigation }) {
+
+    const route = useRoute();
 
     const auth = useSelector((state) => state.userLogin)
     // console.log("fddd",auth.userInfo["username"]);
 
+    const [pub, setPub] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const [loaded] = useFonts({
-        NSLight,
-        NSRegular,
-        NSBold,
-        NSExtraBold,
-    });
+    
 
 
 
     const dispatch = useDispatch();
     const { loading, posts, error } = useSelector((state) => state.postList)
+
     const handleList = () => {
         dispatch(listPosts())
     }
-    useEffect(() => {
-        handleList()
+
+    useEffect(async() => {
+        // setTimeout(()=>{Font.loadAsync({ NSBold, NSRegularFont.loadAsync({ NSBold, NSRegular, NSLight, NSExtraBold }), NSLight, NSExtraBold }),3000})
+        if(route.params.post){
+            console.log("hhhhh",route.params.post)
+            setPub([route.params.post,...pub])
+            handleList()
+        }
+
+      await  Font.loadAsync({ NSBold, NSRegular, NSLight, NSExtraBold }).then(()=>{
+        
+            handleList();
+        })
+
+        await setPub(posts)
+        console.log("pubs", pub);
 
     }, [dispatch])
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        dispatch(listPosts())
+        setPub(posts)
+    },[])
+
+
 
 
     function getRandomImage() {
@@ -62,7 +88,7 @@ function Home({ navigation }) {
 
 
 
-    if (loading & !loaded) {
+    if (loading ) {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size='large' color="red" />
@@ -73,7 +99,11 @@ function Home({ navigation }) {
 
 
             <View style={styles.container}>
-                <ScrollView>
+                <ScrollView 
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
+                >
                     {/* Search Bar View */}
                     <View style={styles.searchBarView}>
                         <View style={styles.searchBar}>
@@ -120,7 +150,7 @@ function Home({ navigation }) {
                     </View>
                     {/* Posts View */}
                     <View style={styles.postsView}>
-                        {posts.map((post) => (
+                        {pub.map((post) => (
                             <View key={post.id}>
                                 <Post post={post} navigation={navigation} />
                             </View>

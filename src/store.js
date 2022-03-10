@@ -20,11 +20,16 @@ import * as SecureStore from 'expo-secure-store';
 import {
     userLoginReducer,
     userRegisterReducer,
+    userListReducer,
+    userPostListReducer,
+    userFollowReducer
 } from "./reducers/userReducer";
 
 import {
     postCreateReducer,
-    postListReducer
+    postListReducer,
+    commentsListReducer,
+    commentCreateReducer
 
 } from './reducers/postReducers'
 
@@ -32,9 +37,15 @@ import {
 
 const reducer = combineReducers({
     postCreate: postCreateReducer,
-    postList:postListReducer,
+    postList: postListReducer,
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
+    commentsList: commentsListReducer,
+    commentCreate: commentCreateReducer,
+    userList: userListReducer,
+    userPostsList: userPostListReducer,
+    userFollow: userFollowReducer
+
 })
 
 

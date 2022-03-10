@@ -5,27 +5,31 @@ import { Provider } from 'react-redux';
 import store from './src/store';
 import Splashscreen from './src/screens/Splashscreen';
 import Authnavigation from './src/Navigation/Authnavigation';
-
+import FlashMessage from "react-native-flash-message";
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-const Root  = createNativeStackNavigator();
+const Root = createNativeStackNavigator();
 
-export default function App(){
+export default function App() {
 
-return (
+  return (
 
-  <Provider store={store}>
+    <Provider store={store}>
 
-    <NavigationContainer>
-     <Root.Navigator>
-        <Root.Screen name="welcome" component={Splashscreen} options={{headerShown:false}}/>
-        <Root.Screen name='auth' component={Authnavigation} options={{headerShown:false}}/>
-        <Root.Screen name="main" component={Main} options={{headerShown:false}}/>
-     </Root.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Root.Navigator>
+          <Root.Screen name="welcome" component={Splashscreen} options={{ headerShown: false }} />
+          <Root.Screen name='auth' component={Authnavigation} options={{ headerShown: false }} />
+          <Root.Screen name="main" component={Main} options={{ headerShown: false }} />
+        </Root.Navigator>
+      </NavigationContainer>
 
-  </Provider>
-);
+      <FlashMessage position="bottom"  />
+
+    </Provider>
+  );
 }
+
+
 
 

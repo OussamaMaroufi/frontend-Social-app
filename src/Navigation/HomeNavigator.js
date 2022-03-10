@@ -18,8 +18,8 @@ const Homenavigator = () => {
     return (
         <HomeStack.Navigator>
             <HomeStack.Screen name='home' component={Home} options={{ headerShown: false }} />
-            <HomeStack.Screen name='comment' component={Comments}options={{ headerShown: false }} />
-            <HomeStack.Screen name='search' component={Searchscreen} />
+            <HomeStack.Screen name='comment' component={Comments} options={{ headerShown: false }} />
+            <HomeStack.Screen name='search' component={Searchscreen} options={{ headerShown: false }} />
             <HomeStack.Screen name='settings' component={Settings} options={{ headerShown: false }} />
         </HomeStack.Navigator>
     );

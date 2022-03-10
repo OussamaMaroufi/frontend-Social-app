@@ -21,6 +21,8 @@ import NSExtraBold from '../../assets/fonts/Nunito-ExtraBold.ttf';
 import Searchbar from '../components/SearchBar';
 
 function Chats({ navigation }) {
+    const [searchText,setSearchText] = useState('')
+    console.log(searchText)
 
     const [loaded] = useFonts({
         NSLight,
@@ -166,7 +168,7 @@ function Chats({ navigation }) {
         <ScrollView showsVerticalScrollIndicator={false}>
 
 
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1,backgroundColor:"#1f1f1f" }}>
 
                 {/*View to display stories */}
                 <View style={{ marginTop: 15, backgroundColor: "#333", paddingVertical: 5 }}>
@@ -192,17 +194,17 @@ function Chats({ navigation }) {
                 {/* Here view of search bar */}
 
                 <View style={{backgroundColor:"#333"}}>
-                   <Searchbar/>
+                   <Searchbar setSearchText={setSearchText}/>
                 </View>
 
                 {/*View to display chats */}
 
-                <View style={{  marginTop: 0, backgroundColor: '#1f1f1f', }}>
+                <View style={{  marginTop: 0, backgroundColor: '#333', }}>
                     {messages.map((chat) => (
                         <TouchableOpacity
                             key={chat.time}
                             style={{
-                                marginTop: 0,
+                                marginTop: 5,
                                 paddingHorizontal: 8,
                                 paddingVertical: 7,
                                 flexDirection: 'row',
