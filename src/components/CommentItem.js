@@ -12,13 +12,13 @@ const Commentitem = ({ comment }) => {
     const route = useRoute();
 
     const handleLike = ()=>{
-        console.log("You Like this post",post.id);
+        console.log("You Like this Comment",comment.id);
     }
 
 
 
     const handleDislike= ()=>{
-        console.log("You dislike this post ",post.id);
+        console.log("You dislike this Comment ",comment.id);
     }
   
 

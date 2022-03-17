@@ -19,8 +19,8 @@ import { listUserPosts } from "../actions/userActions"
 
 const Profilescreen = () => {
 
-  const [showContent, setShowContent] = useState('posts');
-  const [posts,setPosts] = useState([]);
+  const [showContent, setShowContent] = useState('');
+  const [posts, setPosts] = useState([]);
   const auth = useSelector((state) => state.userLogin)
   const { loading, data, error } = useSelector((state) => state.userPostsList)
 
@@ -30,19 +30,31 @@ const Profilescreen = () => {
   //will be dynamic  if we gonna see other user profile 
   const username = auth.userInfo.profile.username;
 
+  console.log(data)
 
 
 
+const LoadResult = (showContent)=>{
+  if(showContent === "posts"){
+   dispatch(listUserPosts(username))
 
-  useEffect(async() => {
+  }else{
+    console.log(showContent);
+  }
+}
 
-   await dispatch(listUserPosts(username))
-   setPosts(data.results)
+  useEffect( async() => {
+
+    await LoadResult()
+    if(!loading){
+
+      setPosts(data.results)
+    }
 
 
   }, [dispatch])
 
-  console.log("This is are ur posts ",posts)
+  console.log("This is are ur posts ", posts)
 
 
   if (loading) {
@@ -133,7 +145,7 @@ const Profilescreen = () => {
 
           </View>
 
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 15 }}>
             <View style={styles.profileContentButtonsView}>
               <TouchableOpacity
                 style={{
@@ -163,17 +175,19 @@ const Profilescreen = () => {
                 <Text style={styles.showContentButtonText}>Tags</Text>
               </TouchableOpacity>
             </View>
-            </View>
-            <ScrollView style={{ backgroundColor: "#1f1f1f" ,marginTop:50 }}>
-                {
-                  showContent === "posts" && (
-                    posts.map((post)=>{
-                        <Post post={post}/>
-                    })
-                )
-                }
+          </View>
 
-                {/**
+          <View style={{marginTop:30}}>
+                {
+                  posts.map((post)=>(
+                    <Post post={post}/>
+                  ))
+                }
+          </View>
+    
+            
+
+            {/**
               {showContent === 'posts' ? (
                 
                 posts.map((post)=>{
@@ -188,8 +202,8 @@ const Profilescreen = () => {
                 <Text>Tags</Text>
               )}*/}
 
-            </ScrollView>
-          
+      
+
         </View>
 
       </ScrollView>
@@ -209,7 +223,7 @@ const styles = StyleSheet.create({
     marginTop: -100,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    flex:1
+    flex: 1
   },
   profileImageView: { alignItems: 'center', marginTop: -50 },
   profileImage: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, Keyboard, TouchableWithoutFeedback,KeyboardAvoidingView } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'
 import { createPost, listPosts } from "../actions/postActions"
 import { useRoute } from '@react-navigation/native';
@@ -87,7 +87,7 @@ const Addpostscreen = ({ navigation }) => {
 
     //Handle Submit 
 
-    const inputs = {
+    let inputs = {
         content: content,
         image: {
             base64Data: base64Data,
@@ -96,6 +96,8 @@ const Addpostscreen = ({ navigation }) => {
     }
 
     const handleSubmit = () => {
+
+      
 
         if (content !== "") {
 
@@ -133,7 +135,7 @@ const Addpostscreen = ({ navigation }) => {
 
 
     return (
-
+        
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
             <View style={styles.container}>
                 <Text style={{ color: "#fff", fontSize: 20, marginBottom: 15 }}>Add Your Post Here ! </Text>
@@ -149,7 +151,7 @@ const Addpostscreen = ({ navigation }) => {
                 />
 
                 <View style={styles.imgPick}>
-                    <Text style={{ color: "#fff", fontSize: 20, textAlign: "center", marginBottom: 10 }}>Here image picker </Text>
+                {/** <Text style={{ color: "#fff", fontSize: 20, textAlign: "center", marginBottom: 10 }}>Here image picker </Text>*/} 
 
                     <View style={styles.imagePreview} >
                         {!pickedImage ? (
@@ -190,6 +192,7 @@ const Addpostscreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
         </TouchableWithoutFeedback>
+       
 
     );
 }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useFonts } from 'expo-font';
 import {
     StyleSheet,
@@ -12,16 +13,40 @@ import {
 } from 'react-native';
 
 import { Feather as Icon, MaterialIcons as MIcon } from '@expo/vector-icons';
-
+import getFormatedChatUser from '../CommonUtil';
 
 import NSLight from '../../assets/fonts/Nunito-Light.ttf'
 import NSRegular from '../../assets/fonts/Nunito-Regular.ttf'
 import NSBold from '../../assets/fonts/Nunito-Bold.ttf'
 import NSExtraBold from '../../assets/fonts/Nunito-ExtraBold.ttf';
 import Searchbar from '../components/SearchBar';
+import { listchats } from "../actions/chatActions"
 
 function Chats({ navigation }) {
-    const [searchText,setSearchText] = useState('')
+
+
+    const auth = useSelector((state) => state.userLogin)
+
+
+    const [chatUsers, setChatUsers] = useState([])
+
+
+
+
+    const dispatch = useDispatch();
+
+    const { loading, data, error } = useSelector((state) => state.chatsList);
+
+    useEffect(async () => {
+        await dispatch(listchats())
+        if (!loading) {
+            setChatUsers(getFormatedChatUser(data, auth.userInfo.id))
+            console.log("Chat usres", chatUsers);
+        }
+    }, [dispatch])
+
+
+    const [searchText, setSearchText] = useState('')
     console.log(searchText)
 
     const [loaded] = useFonts({
@@ -30,120 +55,120 @@ function Chats({ navigation }) {
         NSBold,
         NSExtraBold,
     });
-
-    const [messages, setMessages] = useState([
-        {
-            userImage: 'https://randomuser.me/api/portraits/women/79.jpg',
-            userName: 'Alma Carpenter',
-            message: {
-                sender: 'Alma Carpenter',
-                text: 'Hello',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            isTyping: true,
-            time: 'now',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/33.jpg',
-            userName: 'Sophie Price',
-            message: {
-                sender: 'You',
-                text: 'Are you learning React Native too?',
-                seenByYou: true,
-                seenByUser: false,
-            },
-            time: '03:32 PM',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/33.jpg',
-            userName: 'Jessie Collins',
-            message: {
-                sender: 'You',
-                text: 'Bye!',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: '01:40 PM',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/85.jpg',
-            userName: 'Clinton Meyer',
-            message: {
-                sender: 'Clinton Meyer',
-                text: 'Let me know, what you think?',
-                seenByYou: false,
-                seenByUser: false,
-            },
-            time: '10:37 AM',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/60.jpg',
-            userName: 'Brayden Willis',
-            message: {
-                sender: 'Brayden Willis',
-                text: 'Okay, will share it with you by Friday.',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: 'Yesterday',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/47.jpg',
-            userName: 'Dennis Brown',
-            message: {
-                sender: 'Dennis Brown',
-                text: 'Sure, talk to you later.',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: '3 days ago',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/women/21.jpg',
-            userName: 'Dolores Bell',
-            message: {
-                sender: 'You',
-                text: 'Thanks!',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: '4 days ago',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/54.jpg',
-            userName: 'Everett Green',
-            message: {
-                sender: 'Everett Green',
-                text: 'I am not sure about that.',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: 'one month ago',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/54.jpg',
-            userName: 'Everett Green',
-            message: {
-                sender: 'Everett Green',
-                text: 'I am not sure about that.',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: 'one month ago',
-        },
-        {
-            userImage: 'https://randomuser.me/api/portraits/men/54.jpg',
-            userName: 'Everett Green',
-            message: {
-                sender: 'Everett Green',
-                text: 'I am not sure about that.',
-                seenByYou: true,
-                seenByUser: true,
-            },
-            time: 'one month ago',
-        },
-    ]);
+    const [messages, setMessages] = useState([])
+    // const [messages, setMessages] = useState([
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/women/79.jpg',
+    //         userName: 'Alma Carpenter',
+    //         message: {
+    //             sender: 'Alma Carpenter',
+    //             text: 'Hello',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         isTyping: true,
+    //         time: 'now',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/33.jpg',
+    //         userName: 'Sophie Price',
+    //         message: {
+    //             sender: 'You',
+    //             text: 'Are you learning React Native too?',
+    //             seenByYou: true,
+    //             seenByUser: false,
+    //         },
+    //         time: '03:32 PM',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/33.jpg',
+    //         userName: 'Jessie Collins',
+    //         message: {
+    //             sender: 'You',
+    //             text: 'Bye!',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: '01:40 PM',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/85.jpg',
+    //         userName: 'Clinton Meyer',
+    //         message: {
+    //             sender: 'Clinton Meyer',
+    //             text: 'Let me know, what you think?',
+    //             seenByYou: false,
+    //             seenByUser: false,
+    //         },
+    //         time: '10:37 AM',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/60.jpg',
+    //         userName: 'Brayden Willis',
+    //         message: {
+    //             sender: 'Brayden Willis',
+    //             text: 'Okay, will share it with you by Friday.',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: 'Yesterday',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/47.jpg',
+    //         userName: 'Dennis Brown',
+    //         message: {
+    //             sender: 'Dennis Brown',
+    //             text: 'Sure, talk to you later.',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: '3 days ago',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/women/21.jpg',
+    //         userName: 'Dolores Bell',
+    //         message: {
+    //             sender: 'You',
+    //             text: 'Thanks!',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: '4 days ago',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/54.jpg',
+    //         userName: 'Everett Green',
+    //         message: {
+    //             sender: 'Everett Green',
+    //             text: 'I am not sure about that.',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: 'one month ago',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/54.jpg',
+    //         userName: 'Everett Green',
+    //         message: {
+    //             sender: 'Everett Green',
+    //             text: 'I am not sure about that.',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: 'one month ago',
+    //     },
+    //     {
+    //         userImage: 'https://randomuser.me/api/portraits/men/54.jpg',
+    //         userName: 'Everett Green',
+    //         message: {
+    //             sender: 'Everett Green',
+    //             text: 'I am not sure about that.',
+    //             seenByYou: true,
+    //             seenByUser: true,
+    //         },
+    //         time: 'one month ago',
+    //     },
+    // ]);
 
     if (!loaded) {
         return (
@@ -168,7 +193,7 @@ function Chats({ navigation }) {
         <ScrollView showsVerticalScrollIndicator={false}>
 
 
-            <View style={{ flex: 1,backgroundColor:"#1f1f1f" }}>
+            <View style={{ flex: 1, backgroundColor: "#1f1f1f" }}>
 
                 {/*View to display stories */}
                 <View style={{ marginTop: 15, backgroundColor: "#333", paddingVertical: 5 }}>
@@ -193,16 +218,16 @@ function Chats({ navigation }) {
                 </View>
                 {/* Here view of search bar */}
 
-                <View style={{backgroundColor:"#333"}}>
-                   <Searchbar setSearchText={setSearchText}/>
+                <View style={{ backgroundColor: "#333" }}>
+                    <Searchbar setSearchText={setSearchText} />
                 </View>
 
                 {/*View to display chats */}
 
-                <View style={{  marginTop: 0, backgroundColor: '#333', }}>
-                    {messages.map((chat) => (
+                <View style={{ marginTop: 0, backgroundColor: '#333', }}>
+                    {chatUsers.length > 0 && chatUsers.map((chat) => (
                         <TouchableOpacity
-                            key={chat.time}
+                            key={chat.id}
                             style={{
                                 marginTop: 5,
                                 paddingHorizontal: 8,
@@ -213,30 +238,30 @@ function Chats({ navigation }) {
 
 
                             }}
-                            onLongPress={() => {
-                                Alert.alert(
-                                    'Delete Chat?',
-                                    `Do you want to delete ${chat.userName}'s chats?`,
-                                    [
-                                        {
-                                            text: 'Cancel',
-                                            onPress: () => { },
-                                            style: 'cancel',
-                                        },
-                                        {
-                                            text: 'Yes',
-                                            onPress: () => {
-                                                let newChats = messages.filter(
-                                                    (m) => m.userName !== chat.userName
-                                                );
-                                                setMessages(newChats);
-                                            },
-                                        },
-                                    ],
-                                    { cancelable: false }
-                                );
-                            }}
-                            onPress={() => navigation.navigate("Room")}
+                            // onLongPress={() => {
+                            //     Alert.alert(
+                            //         'Delete Chat?',
+                            //         `Do you want to delete ${chat.name}'s chats?`,
+                            //         [
+                            //             {
+                            //                 text: 'Cancel',
+                            //                 onPress: () => { },
+                            //                 style: 'cancel',
+                            //             },
+                            //             {
+                            //                 text: 'Yes',
+                            //                 onPress: () => {
+                            //                     let newChats = messages.filter(
+                            //                         (m) => m.userName !== chat.userName
+                            //                     );
+                            //                     setMessages(newChats);
+                            //                 },
+                            //             },
+                            //         ],
+                            //         { cancelable: false }
+                            //     );
+                            // }}
+                            onPress={() => navigation.navigate("Room",{'chat':chat})}
                         >
                             <TouchableOpacity>
                                 {/*Here we set image of user  to redirect to user profile  */}
@@ -249,13 +274,14 @@ function Chats({ navigation }) {
                                     }}
 
                                     source={{
-                                        uri: chat.userImage,
+                                        uri: `http://192.168.1.100:8000${chat.image}`
                                     }}
                                 />
 
 
 
                             </TouchableOpacity>
+                         
                             <View style={{ flex: 1, paddingHorizontal: 10 }}>
                                 <View
                                     style={{
@@ -271,13 +297,13 @@ function Chats({ navigation }) {
 
                                         }}
                                     >
-                                        {chat.userName}
+                                        {chat.name}
                                     </Text>
                                     <Text style={{ fontFamily: 'NSRegular', fontSize: 14, color: "#fff" }}>
-                                        {chat.time}
+                                        12:00
                                     </Text>
                                 </View>
-                                <View
+                                {/**<View
                                     style={{
                                         flexDirection: 'row',
                                         alignItems: 'center',
@@ -317,13 +343,14 @@ function Chats({ navigation }) {
                                             <MIcon name='done' size={16} color={'#555'} />
                                         )
                                     ) : null}
-                                </View>
+                                </View>*/}
                             </View>
+
                         </TouchableOpacity>
                     ))}
 
-                </View>
-            </View>
+                </View> 
+            </View> 
 
         </ScrollView>
     );

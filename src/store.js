@@ -29,9 +29,16 @@ import {
     postCreateReducer,
     postListReducer,
     commentsListReducer,
-    commentCreateReducer
+    commentCreateReducer,
+
 
 } from './reducers/postReducers'
+
+import {
+    chatsListReducer,
+    addRoomReducer,
+    messagesListReducer
+} from "./reducers/chatReducers";
 
 
 
@@ -44,7 +51,11 @@ const reducer = combineReducers({
     commentCreate: commentCreateReducer,
     userList: userListReducer,
     userPostsList: userPostListReducer,
-    userFollow: userFollowReducer
+    userFollow: userFollowReducer,
+
+    chatsList: chatsListReducer,
+    addRoom: addRoomReducer,
+    messagesList: messagesListReducer
 
 })
 

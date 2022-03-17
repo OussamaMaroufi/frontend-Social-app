@@ -160,8 +160,6 @@ export const listUsers = (q = '') => async (dispatch, getState) => {
 
 
 export const listUserPosts = (username) => async (dispatch) => {
-    console.log("This function trigged ");
-
     try {
         dispatch({ type: USER_POSTS_LIST_REQUEST })
 
@@ -176,7 +174,7 @@ export const listUserPosts = (username) => async (dispatch) => {
 
 
         dispatch({
-            type: USER_FOLLOW_SUCCESS,
+            type: USER_POSTS_LIST_SUCCESS,
             payload: data
         })
 
@@ -193,13 +191,16 @@ export const listUserPosts = (username) => async (dispatch) => {
 
 
 //This Action  to handle following 
-export const followUser = (username) => async (dispatch) => {
-    console.log("This function trigged ");
-
+export const followUser = (username) => async (dispatch, getState) => {
+    
     try {
         dispatch({ type: USER_FOLLOW_REQUEST })
 
-     
+        const {
+            userLogin: { userInfo },
+        } = getState()
+
+
         const config = {
             headers: {
                 'Content-type': 'application/json',
@@ -207,11 +208,9 @@ export const followUser = (username) => async (dispatch) => {
             }
         }
 
-        const { data } = await axios.post(`http://192.168.1.100:8000/api/users/${username}/follow/`, config)
-
-
+        const { data } = await axios.post(`http://192.168.1.100:8000/api/users/${username}/follow/`, {}, config)
         dispatch({
-            type: USER_POSTS_LIST_SUCCESS,
+            type: USER_FOLLOW_SUCCESS,
             payload: data
         })
 

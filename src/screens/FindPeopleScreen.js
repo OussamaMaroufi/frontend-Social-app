@@ -14,6 +14,14 @@ import Useritem from '../components/UserItem';
 import { listUsers } from '../actions/userActions';
 
 
+import * as Font from 'expo-font';
+
+import NSLight from '../../assets/fonts/Nunito-Light.ttf'
+import NSRegular from '../../assets/fonts/Nunito-Regular.ttf'
+import NSBold from '../../assets/fonts/Nunito-Bold.ttf'
+import NSExtraBold from '../../assets/fonts/Nunito-ExtraBold.ttf';
+
+
 
 const Findpeoplescreen = ({ searchText }) => {
 
@@ -33,6 +41,7 @@ const Findpeoplescreen = ({ searchText }) => {
     console.log(searchText);
 
     useEffect(async () => {
+        await  Font.loadAsync({ NSBold, NSRegular, NSLight, NSExtraBold })
         await dispatch(listUsers(q = searchText))
         if (!loading) {
             setUsers(data.results)
@@ -80,7 +89,7 @@ const Findpeoplescreen = ({ searchText }) => {
             {
                 users.map((user) => (
                     <View style={{ marginTop: 10 }}>
-                        <Useritem user={user} />
+                        <Useritem user={user} setUsers={setUsers} users={users} />
                     </View>
                 ))
             }

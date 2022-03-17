@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, StyleSheet } from 'react-native'
-
+import Menuitem from "../components/MenuItem";
 
 
 function Settings({navigation}) {
@@ -9,6 +9,7 @@ function Settings({navigation}) {
             <Text style={{color:"#fff",fontSize:20}}>
                 Settings Of our App
             </Text>
+            <Menuitem/>
         </View>
     );
 }

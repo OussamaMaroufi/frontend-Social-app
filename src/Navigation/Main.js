@@ -43,6 +43,7 @@ const Main = () => {
                     ),
                     headerShown:false
                 }}
+                
             />
             <Tab.Screen
                 name='Chats'

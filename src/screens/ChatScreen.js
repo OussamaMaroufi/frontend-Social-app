@@ -14,13 +14,43 @@ import {
     Alert,
 } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { useDispatch, useSelector } from 'react-redux';
+import { listMessages } from "../actions/chatActions"
+import SocketActions from '../socketActions';
+
+const Chatscreen = ({ route, navigation }) => {
+    const auth = useSelector((state) => state.userLogin)
+
+    let typingTimer = 0;
+    let isTypingSignalSent = false;
+
+    const { chat } = route.params;
+    //    console.log("kk",chat);
+    let socket = new WebSocket(
+        `ws://192.168.1.100:8000/ws/users/${auth.userInfo.id}/chat/`
+    )
 
 
-const Chatscreen = ({navigation}) => {
+    const dispatch = useDispatch()
+    const { loading, data, error } = useSelector((state) => state.messagesList);
+    // console.log("Theese are messages for this room!", data)
+    const [messages, setMessages] = useState([]);
+    const [typing, setTyping] = useState(false);
+    const [inputMessage, setInputMessage] = useState('');
+
+    useEffect(() => {
+        dispatch(listMessages(chat.roomId))
+
+        if (!loading) {
+            setMessages(data?.reverse())
+        }
+    }, [dispatch, chat])
+
+
 
     const [chatUser] = useState({
-        name: 'Robert Henry',
-        profile_image: 'https://randomuser.me/api/portraits/men/0.jpg',
+        name: chat.name,
+        profile_image: `http://192.168.1.100:8000${chat.image}`,
         last_seen: 'online',
     });
 
@@ -28,54 +58,6 @@ const Chatscreen = ({navigation}) => {
         name: 'John Doe',
     });
 
-    const [messages, setMessages] = useState([
-        { sender: 'John Doe', message: 'Hey there!', time: '6:01 PM' },
-        {
-            sender: 'Robert Henry',
-            message: 'Hello, how are you doing?kdjnckjncsbcjhbsdhcbdhcbs',
-            time: '6:02 PM',
-        },
-        {
-            sender: 'John Doe',
-            message: 'I am good, how about you?',
-            time: '6:02 PM',
-        },
-        {
-            sender: 'John Doe',
-            message: `😊😇`,
-            time: '6:02 PM',
-        },
-        {
-            sender: 'Robert Henry',
-            message: `Can't wait to meet you.`,
-            time: '6:03 PM',
-        },
-        {
-            sender: 'John Doe',
-            message: `That's great, when are you coming?`,
-            time: '6:03 PM',
-        },
-        {
-            sender: 'Robert Henry',
-            message: `This weekend.`,
-            time: '6:03 PM',
-        },
-        {
-            sender: 'Robert Henry',
-            message: `Around 4 to 6 PM.`,
-            time: '6:04 PM',
-        },
-        {
-            sender: 'John Doe',
-            message: `Great, don't forget`,
-            time: '6:05 PM',
-        },
-        {
-            sender: 'Robert Henry',
-            message: `Sure!`,
-            time: '6:05 PM',
-        },
-    ]);
 
     //THis fct to get current time when input a messge 
     function getTime(date) {
@@ -89,23 +71,78 @@ const Chatscreen = ({navigation}) => {
         return strTime;
     }
 
-    const [inputMessage, setInputMessage] = useState('');
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        const chatId = chat.id;
+        const userId = auth.userInfo.id
+        if (chatId === data.roomId) {
+            if (data.action === SocketActions.MESSAGE) {
+                // data["userImage"] = ServerUrl.BASE_URL.slice(0, -1) + data.userImage;
+                setMessages((prevState) => {
+                    let messagesState = JSON.parse(JSON.stringify(prevState));
+                    messagesState.results.unshift(data);
+                    return messagesState;
+                });
+
+
+                setMessages((prev) => [...prev, data.message])
+                setTyping(false);
+            }
+            else if (data.action === SocketActions.TYPING && data.user !== auth.userInfo.id) {
+                setTyping(data.typing);
+            }
+        }
+        // if (data.action === SocketActions.ONLINE_USER) {
+        //   setOnlineUserList(data.userList);
+        // }
+    };
+
 
     function sendMessage() {
-        if (inputMessage === '') {
-            return setInputMessage('');
+        if (inputMessage) {
+            socket.send(
+                JSON.stringify({
+                    action: SocketActions.MESSAGE,
+                    message: inputMessage,
+                    user: auth.userInfo.id,
+                    roomId: chat.roomId,
+                })
+            );
         }
-        let t = getTime(new Date());
-        setMessages([
-            ...messages,
-            {
-                sender: currentUser.name,
-                message: inputMessage,
-                time: t,
-            },
-        ]);
         setInputMessage('');
     }
+
+    const sendTypingSignal = (typing) => {
+        socket.send(
+            JSON.stringify({
+                action: SocketActions.TYPING,
+                typing: typing,
+                user: auth.userInfo.id,
+                roomId: chat.roomId
+            })
+        );
+    };
+
+    const chatMessageTypingHandler = (event) => {
+        if (event.keyCode !== 13) {
+            if (!isTypingSignalSent) {
+                sendTypingSignal(true);
+                isTypingSignalSent = true;
+                console.log("State of,typing", typing)
+            }
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                sendTypingSignal(false);
+                isTypingSignalSent = false;
+            }, 3000);
+        } else {
+            clearTimeout(typingTimer);
+            isTypingSignalSent = false;
+        }
+    };
+
 
 
     useEffect(() => {
@@ -158,6 +195,11 @@ const Chatscreen = ({navigation}) => {
         });
     }, []);
 
+    useEffect(() => {
+        console.log("refreshed");
+        console.log(messages);
+    }, [messages])
+
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={styles.container}>
@@ -167,14 +209,14 @@ const Chatscreen = ({navigation}) => {
                     data={JSON.parse(JSON.stringify(messages)).reverse()}
                     renderItem={({ item }) => (
                         <TouchableWithoutFeedback>
-                            <View style={{ marginTop: 6 , }}>
+                            <View style={{ marginTop: 6, }}>
                                 <View
                                     style={{
                                         maxWidth: Dimensions.get('screen').width * 0.6,
                                         backgroundColor: 'grey',
                                         alignSelf:
-                                        item.sender === currentUser.name
-                                        ? 'flex-end' 
+                                            item.user === auth.userInfo.id
+                                                ? 'flex-end'
                                                 : 'flex-start',
 
                                         marginHorizontal: 10,
@@ -209,6 +251,13 @@ const Chatscreen = ({navigation}) => {
                     )}
                 />
 
+                {
+                    typing &&
+                    <View>
+                        <Text style={{ color: "#fff" }}>Typing</Text>
+                    </View>
+                }
+
                 <View style={{ paddingVertical: 10 }}>
                     <View style={styles.messageInputView}>
                         <TextInput
@@ -219,6 +268,9 @@ const Chatscreen = ({navigation}) => {
                             onSubmitEditing={() => {
                                 sendMessage();
                             }}
+
+
+                            onKeyPress={chatMessageTypingHandler}
                         />
                         <TouchableOpacity
                             style={styles.messageSendView}

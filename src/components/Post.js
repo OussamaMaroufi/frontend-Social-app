@@ -5,22 +5,20 @@ import formatDate from '../utilities/formatDate'
 import { useRoute } from '@react-navigation/native';
 import store from "../store"
 import axios from 'axios';
+import Menuitem from './MenuItem';
 function Post({ post, navigation }) {
 
 
     const [react, setReact] = useState('')
-    const [likeNo,setLikeNo] = useState(post.up_voters.length)
-    const [dislikeNo,setDislikeNo] = useState(post.down_voters.length)
-    // console.log(post);
+    const [likeNo,setLikeNo] = useState()
+    const [dislikeNo,setDislikeNo] = useState()
+    console.log(post);
     const route = useRoute();
     // console.log(route);
     const {
         userLogin: { userInfo },
     } = store.getState()
 
-
-
-    // console.log("user", userInfo)
 
     const config = {
         headers: {
@@ -30,37 +28,23 @@ function Post({ post, navigation }) {
     }
 
     const handleLike = async () => {
-
-        let foundDisLike  = post.down_voters.includes(userInfo.profile);
-        if(foundDisLike){
-            setDislikeNo((prev)=>prev-1)
-        }
-
         try {
 
             const { data } = await axios.post(`http://192.168.1.100:8000/api/posts/react/${post.id}/`, { value: "like" }, config)
-            // check if curent user in ipvoter first if no react = like else react =  '' ==>that'smean user delete his react 
-            // let res = data.up_voters.filter((user) => user.id == userInfo.id)
-            const isFound = data.up_voters.some(user => {
-                if (user.id === userInfo.id) {
-                  return true;
-                }
-              });
-            console.log("ddd", isFound);
-            // console.log(data.up_voters);
-            if(isFound){
-
+            if(react === "dislike"){
                 setReact('like');
-                setLikeNo((prev)=>prev+ 1)
-
-               
-                
-        
-
+                setLikeNo((prev)=>prev+1);
+                setDislikeNo((prev)=>prev-1)
             }else{
-                setReact('');
-                setLikeNo((prev)=> prev - 1)
+                if(react === "like"){
+                    setReact("");
+                    setLikeNo((prev)=>prev-1)
+                }else{
+                    setReact("like");
+                    setLikeNo((prev)=>prev+1)
+                }
             }
+    
         } catch {
             console.log("There is some error here !! ");
         }
@@ -74,59 +58,49 @@ function Post({ post, navigation }) {
 
             console.log("You dislike this post ", post.id);
             const { data } = await axios.post(`http://192.168.1.100:8000/api/posts/react/${post.id}/`, { value: "dislike" }, config)
-            //check if cuurent user in downvoter first if not react = dislike  else react = '' 
-            const isFound = data.down_voters.some(user => {
-                if (user.id === userInfo.id) {
-                  return true;
-                }
-              });
-              if(isFound){
-                  setReact('dislike');
-                  setDislikeNo((prev)=>prev+1)
-                  
-                  
 
-              }else{
-                  setReact("");
-                  setDislikeNo((prev)=> prev - 1)
-                  
-                                }
+            if(react === 'like'){
+                setReact('dislike');
+                setDislikeNo((prev)=>prev+1);
+                setLikeNo((prev)=>prev-1);
+            }else{
+                if(react === "dislike"){
+                    setReact("");
+                    setDislikeNo((prev)=>prev-1);
+                }else{
+                    setReact("dislike")
+                    setDislikeNo((prev)=>prev+1);
+                }
+            }
+          
         } catch {
             console.log("There is some error Here !!! ");
         }
     }
 
-    // console.log(userInfo);
-
-    // let storeContent = store.getState()
-    // console.log("This is store content  ", storeContent);
-
-
-
-    // const checkReactType = () => {
-             
-    //     // const islike = post.up_voters.some(voter => {
-    //     //     if (voter.id === userInfo.profile.id) {
-    //     //         setReact('like')
-    //     //     }
-    //     // });
-    //     let foundLike  = post.up_voters.includes(userInfo.profile);
-    //     if(foundLike){
-    //         setReact('like')
-    //     }
-
-    //     let foundDislike = post.down_voters.includes(userInfo.profile);
-    //     if(foundDislike){
-    //         setReact('dislike');
-    //     }
-    // }
-
   useEffect(()=>{
-    // checkReactType()
+      let  up_voters_Ids = post.up_voters.map((voter)=>voter.id);
+      let  down_voters_Ids = post.down_voters.map((voter)=>voter.id) 
+      setLikeNo(post.up_voters.length);
+      setDislikeNo(post.down_voters.length)
+
+        if(up_voters_Ids.includes(userInfo.id)){
+            setReact('like');
+        }else{
+            if(down_voters_Ids.includes(userInfo.id)){
+                setReact('dislike');
+            }else{
+                setReact('');
+            }
+        }
+        
     
-    console.log('ff')
-    
-  },[react,likeNo,dislikeNo])
+  },[])
+
+  const menuProps = {
+       target:"post",
+       data:post
+  }
 
 
 
@@ -167,8 +141,9 @@ function Post({ post, navigation }) {
                 <View>
 
                     <Text style={{ color: "#fff" }} >{formatDate.distanceDate(post.created)}</Text>
-                    <TouchableOpacity>
-                        <Icon name='more-horizontal' color='#fff' size={28} style={{ alignSelf: "flex-end" }} />
+                    <TouchableOpacity style={{marginTop:15,marginRight:2}}>
+                       {/**<Icon name='more-horizontal' color='#fff' size={28} style={{ alignSelf: "flex-end" }} /> */}  
+                       <Menuitem menuProps={menuProps}/>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -184,12 +159,12 @@ function Post({ post, navigation }) {
                 >
                     {post.content}
                 </Text>
-                {post.image ? (
+                {post.image && (
                     <Image
                         style={{ width: '100%', height: 300, marginTop: 10 }}
                         source={{ uri: `http://192.168.1.100:8000${post.image}/`, }}
                     />
-                ) : null}
+                ) }
             </View>
             {/* Post Stats */}
             <View
@@ -211,7 +186,7 @@ function Post({ post, navigation }) {
                             color: '#fff',
                         }}
                     >
-                        {likeNo}
+                        {likeNo>0?likeNo:''}
                        
 
                     </Text>
@@ -235,7 +210,7 @@ function Post({ post, navigation }) {
                             color: '#fff',
                         }}
                     >
-                        {dislikeNo}
+                        {dislikeNo>0?dislikeNo:""}
                        
 
                     </Text>
@@ -284,6 +259,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
+        maxHeight:60
     },
     postStatsOpacity: {
         backgroundColor: '#222',

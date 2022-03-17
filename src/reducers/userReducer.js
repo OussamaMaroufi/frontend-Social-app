@@ -73,15 +73,15 @@ export const userRegisterReducer = (state = {}, action) => {
 export const userListReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_LIST_REQUEST:
-            return { loading: true}
+            return { loading: true }
 
-        case USER_LIST_SUCCESS:{
+        case USER_LIST_SUCCESS: {
             return {
                 loading: false,
                 data: action.payload,
             }
         }
-            
+
 
         case USER_LIST_FAIL:
             return { loading: false, error: action.payload }
@@ -95,15 +95,15 @@ export const userListReducer = (state = {}, action) => {
 export const userPostListReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_POSTS_LIST_REQUEST:
-            return { loading: true}
+            return { loading: true }
 
-        case USER_POSTS_LIST_SUCCESS:{
+        case USER_POSTS_LIST_SUCCESS: {
             return {
                 loading: false,
                 data: action.payload,
             }
         }
-            
+
 
         case USER_POSTS_LIST_FAIL:
             return { loading: false, error: action.payload }
@@ -114,17 +114,18 @@ export const userPostListReducer = (state = {}, action) => {
 }
 
 export const userFollowReducer = (state = {}, action) => {
+
     switch (action.type) {
         case USER_FOLLOW_REQUEST:
-            return { loading: true}
+            return { loading: true }
 
-        case USER_FOLLOW_SUCCESS:{
+        case USER_FOLLOW_SUCCESS: {
             return {
                 loading: false,
                 data: action.payload,
             }
         }
-            
+
 
         case USER_FOLLOW_FAIL:
             return { loading: false, error: action.payload }

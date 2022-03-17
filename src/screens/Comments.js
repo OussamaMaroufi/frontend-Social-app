@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert,Keyboard } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { Icon } from 'react-native-elements';
 
 import Post from '../components/Post';
@@ -14,19 +14,28 @@ const Comments = ({ route, navigation }) => {
     const dispatch = useDispatch()
 
     const [inputComment, setInputComment] = useState('')
+    const [_Comments, setListComments] = useState([]);
 
     const commentData = {
         content: inputComment
     }
 
-    const sendComment = () => {
+    const { success, comment } = useSelector((state) => state.commentCreate)
+
+    const sendComment =async () => {
         if (inputComment == '') {
             Alert('Comment should not be empty  !!')
         } else {
-            dispatch(createComment(post.id, commentData))
-            if(success){
+           await dispatch(createComment(post.id, commentData))
+            if (comment) {
                 setInputComment('');
                 Keyboard.dismiss()
+                if (success) {
+                    // setListComments((_Comments) => [comment,..._Comments]);
+                    console.log("success");
+                }
+
+
             }
         }
     }
@@ -36,16 +45,28 @@ const Comments = ({ route, navigation }) => {
 
 
 
+
+
+
+
+
+
     const { loading, comments, error } = useSelector((state) => state.commentsList);
-    const {success, comment } = useSelector((state) => state.commentCreate)
     console.log("THis the state of create a comment ", success)
+    // console.log("Theese are comments Here ",comments)
 
 
 
     useEffect(() => {
         dispatch(listComments(post.id))
 
-    }, [dispatch])
+        if (!loading) {
+            setListComments(comments)
+        }
+
+
+    }, [dispatch,success])
+
 
 
 
@@ -62,36 +83,36 @@ const Comments = ({ route, navigation }) => {
 
 
         return (
-            <View style={styles.container}>
-                <Post post={post} />
-                {/**Dispaly comments Here */}
+            <View style={styles.container} showsHorizontalScrollIndicator={false}>
+                <View >
+                    <Post post={post} />
 
 
-                {
+                    
+                    
+                </View>
+                    {/**Dispaly comments Here */}
 
-                
 
 
-                <ScrollView>
+
+
+
+
+                    <ScrollView>
 
                     {
-                        comments.map((comment) => (
-                            <View key={comment.id}>
+                        _Comments.map((comment) => (
+                            <View key={comment.id} style={{ marginBottom: 2 }}>
                                 <Commentitem comment={comment} />
                             </View>
                         ))
                     }
 
-                </ScrollView>
+                    </ScrollView>
 
-            }
-
-
-
-
-
-                <View style={{ paddingVertical: 20, marginBottom: 5 }}>
-
+                    <View style={{ paddingVertical: 20, marginBottom:0 }}>
+                    
                     <View style={styles.messageInputView}>
                         <TextInput
                             value={inputComment}
@@ -111,6 +132,15 @@ const Comments = ({ route, navigation }) => {
                 </View>
 
 
+
+
+
+                    
+
+
+
+
+                
             </View>
         );
     }
@@ -124,6 +154,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#1f1f1f',
         paddingTop: 20,
+        marginBottom:2
     },
     messageInputView: {
         display: 'flex',

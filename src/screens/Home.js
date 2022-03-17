@@ -1,4 +1,4 @@
-import React, { useState, useEffect ,useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     StyleSheet,
     Text,
@@ -32,12 +32,12 @@ function Home({ navigation }) {
     const route = useRoute();
 
     const auth = useSelector((state) => state.userLogin)
-    // console.log("fddd",auth.userInfo["username"]);
+    // console.log("fddd",auth.userInfo);
 
     const [pub, setPub] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    
+
 
 
 
@@ -48,29 +48,34 @@ function Home({ navigation }) {
         dispatch(listPosts())
     }
 
-    useEffect(async() => {
-        // setTimeout(()=>{Font.loadAsync({ NSBold, NSRegularFont.loadAsync({ NSBold, NSRegular, NSLight, NSExtraBold }), NSLight, NSExtraBold }),3000})
-        if(route.params.post){
-            console.log("hhhhh",route.params.post)
-            setPub([route.params.post,...pub])
-            handleList()
+    useEffect(() => {
+        handleList()
+
+        if (!loading) { 
+            setPub(posts)
         }
 
-      await  Font.loadAsync({ NSBold, NSRegular, NSLight, NSExtraBold }).then(()=>{
-        
-            handleList();
-        })
-
-        await setPub(posts)
-        console.log("pubs", pub);
 
     }, [dispatch])
+
+    useEffect(async () => {
+        await Font.loadAsync({ NSBold, NSRegular, NSLight, NSExtraBold })
+    }, [])
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         dispatch(listPosts())
         setPub(posts)
-    },[])
+    }, [navigation])
+
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          console.log('Refreshed!');
+        });
+        dispatch(listPosts())
+        setPub(posts)
+        return unsubscribe;
+      }, [navigation]);
 
 
 
@@ -88,7 +93,7 @@ function Home({ navigation }) {
 
 
 
-    if (loading ) {
+    if (loading) {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size='large' color="red" />
@@ -99,10 +104,10 @@ function Home({ navigation }) {
 
 
             <View style={styles.container}>
-                <ScrollView 
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                  }
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                 >
                     {/* Search Bar View */}
                     <View style={styles.searchBarView}>
