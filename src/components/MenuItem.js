@@ -20,14 +20,24 @@ const Menuitem = (props) => {
 
     const auth = useSelector((state) => state.userLogin);
     console.log(auth.userInfo.id);
-    // console.log("Usre",props.menuProps.data.user.user);
-
-
-
-
+    // console.log("Usre",props.menuProps.data.user);
 
     const dispatch = useDispatch();
     const navigation = useNavigation();
+
+    const deletePostHandler = ()=>{
+
+    }
+
+    const viewProfileHandler = ()=>{
+        navigation.navigate("profile",{
+            user:props.menuProps.data.user
+        })
+    }
+
+
+
+
 
     return (
 
@@ -47,11 +57,11 @@ const Menuitem = (props) => {
 
                         props.menuProps.data.user.user === auth.userInfo.id ? (
                             <View>
-                                <MenuOption onSelect={() => console.log("View profile fct ")}>
+                                <MenuOption onSelect={viewProfileHandler}>
                                     <Text>View Profile</Text>
                                 </MenuOption>
 
-                                <MenuOption onSelect={() => console.log("Dlete This post")}>
+                                <MenuOption onSelect={deletePostHandler}>
 
                                     <Text>Delete Post</Text>
                                 </MenuOption>
@@ -60,7 +70,7 @@ const Menuitem = (props) => {
 
                             </View>
                         ) : (
-                            <MenuOption onSelect={() => console.log("View profile fct ")}>
+                            <MenuOption onSelect={viewProfileHandler}>
                                 <Text>View Profile</Text>
                             </MenuOption>
                         )

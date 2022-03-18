@@ -30,6 +30,7 @@ import {
     postListReducer,
     commentsListReducer,
     commentCreateReducer,
+    postDeleteReducer
 
 
 } from './reducers/postReducers'
@@ -45,6 +46,7 @@ import {
 const reducer = combineReducers({
     postCreate: postCreateReducer,
     postList: postListReducer,
+    postDelete:postDeleteReducer,
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
     commentsList: commentsListReducer,

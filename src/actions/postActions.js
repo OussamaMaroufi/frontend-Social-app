@@ -11,11 +11,52 @@ import {
     COMMENT_CREATE_FAIL,
     COMMENT_CREATE_REQUEST,
     COMMENT_CREATE_SUCCESS,
+    POST_DELETE_REQUEST,
+    POST_DELETE_SUCCESS,
+    POST_DELETE_FAIL,
 
 
 } from "../constants/postConstants";
 
 import axios from "axios";
+
+
+export const deletePost = (postId) => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: POST_DELETE_REQUEST
+        })
+
+        const {
+            userLogin: { userInfo },
+        } = getState()
+
+        const config = {
+            headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${userInfo.access}`
+            }
+        }
+
+        const { data } = await axios.delete(
+            `http://192.168.1.100:8000/api/posts/delete/${postId}`,
+            config
+        )
+        dispatch({
+            type: POST_DELETE_SUCCESS,
+            payload: data,
+        })
+
+
+    } catch (error) {
+        dispatch({
+            type: POST_DELETE_FAIL,
+            payload: error.response && error.response.data.detail
+                ? error.response.data.detail
+                : error.message,
+        })
+    }
+}
 
 
 

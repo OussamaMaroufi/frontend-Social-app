@@ -33,6 +33,7 @@ function Home({ navigation }) {
 
     const auth = useSelector((state) => state.userLogin)
     // console.log("fddd",auth.userInfo);
+    // console.log(route.params);
 
     const [pub, setPub] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
@@ -68,14 +69,18 @@ function Home({ navigation }) {
         setPub(posts)
     }, [navigation])
 
-    React.useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', async() => {
           console.log('Refreshed!');
+         await dispatch(listPosts())  
+          if(!loading){
+
+           await setPub(posts)
+        }
         });
-        dispatch(listPosts())
-        setPub(posts)
+     
         return unsubscribe;
-      }, [navigation]);
+      }, [dispatch,navigation]);
 
 
 

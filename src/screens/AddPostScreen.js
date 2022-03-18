@@ -27,6 +27,8 @@ const Addpostscreen = ({ navigation }) => {
     const clearForm = () => {
         setContent("");
         setPickedImage();
+        setImageType('');
+        setBase64Data('');
     }
     //This Function used to verify permission of using camera 
     const verifyPermissions = async () => {

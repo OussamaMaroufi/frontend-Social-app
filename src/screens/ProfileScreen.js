@@ -16,50 +16,88 @@ import { Feather as Icon } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux'
 import Post from '../components/Post';
 import { listUserPosts } from "../actions/userActions"
+import { useRoute } from '@react-navigation/native';
 
-const Profilescreen = () => {
+const Profilescreen = ({ route, navigation }) => {
 
-  const [showContent, setShowContent] = useState('');
+  // const route = useRoute()
+  // console.log("this is are route params",route.params);
+
+
+  const [showContent, setShowContent] = useState('posts');
   const [posts, setPosts] = useState([]);
   const auth = useSelector((state) => state.userLogin)
+  const [currentProfile, setCurrentProfile] = useState(auth.userInfo.profile)
+
   const { loading, data, error } = useSelector((state) => state.userPostsList)
+  console.log(currentProfile.username);
 
 
   const dispatch = useDispatch();
 
   //will be dynamic  if we gonna see other user profile 
-  const username = auth.userInfo.profile.username;
+  // const username = currentProfile.username
+  // console.log("username",currentProfile.username);
 
-  console.log(data)
+  // console.log(data)
+
+  // useEffect(() => {
+  //   // console.log(route.params);
+  //   if(route.params){
+  //     const { user } = route.params
+  //     console.log("this is the user", user);
+
+  //     setCurrentProfile(route.params)
+  //     console.log(currentProfile.username);
+  //   }else{
+  //     setCurrentProfile(auth.userInfo.profile)
+  //   }
 
 
+  // }, [navigation])
 
-const LoadResult = (showContent)=>{
-  if(showContent === "posts"){
-   dispatch(listUserPosts(username))
 
-  }else{
-    console.log(showContent);
-  }
-}
+  const setCurrentUser = () => {
+    if (route.params) {
+      const { user } = route.params
+      console.log("this is the user", user);
 
-  useEffect( async() => {
-
-    await LoadResult()
-    if(!loading){
-
-      setPosts(data.results)
+      setCurrentProfile(route.params)
+      console.log(currentProfile.username);
+    } else {
+      setCurrentProfile(auth.userInfo.profile)
     }
+  }
 
 
+
+  const LoadResult = async () => {
+
+  
+
+
+    if (showContent === "posts") {
+      await dispatch(listUserPosts(currentProfile.username))
+      if (!loading) {
+        setPosts(data.results)
+      }
+
+    } else {
+      // console.log(showContent);
+    }
+  }
+
+  useEffect(() => {
+    LoadResult()
   }, [dispatch])
 
-  console.log("This is are ur posts ", posts)
 
 
   if (loading) {
     return (
-      <ActivityIndicator size={22} color="red" />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#1f1f1f" }}>
+        <ActivityIndicator size={22} color="red" />
+      </View>
     )
   }
 
@@ -87,19 +125,19 @@ const LoadResult = (showContent)=>{
               <Image
                 style={styles.profileImage}
                 source={{
-                  uri: 'https://randomuser.me/api/portraits/women/46.jpg',
+                  uri: `http://192.168.1.100:8000${auth.userInfo.profile.profile_pic}`,
                 }}
               />
             </View>
             {/* Profile Name and Bio */}
             <View style={styles.nameAndBioView}>
-              <Text style={styles.userFullName}>{'Sophie Welch'}</Text>
+              <Text style={styles.userFullName}>{auth.userInfo.profile.username}</Text>
               <Text style={styles.userBio}>{'I love capturing photos'}</Text>
             </View>
             {/* Posts/Followers/Following View */}
             <View style={styles.countsView}>
               <View style={styles.countView}>
-                <Text style={styles.countNum}>13</Text>
+                <Text style={styles.countNum}>{posts.length}</Text>
                 <Text style={styles.countText}>Posts</Text>
               </View>
               <View style={styles.countView}>
@@ -113,25 +151,28 @@ const LoadResult = (showContent)=>{
             </View>
 
             {/* Interact Buttons View */}
-            <View style={styles.interactButtonsView}>
-              <TouchableOpacity style={styles.interactButton}>
-                <Text style={styles.interactButtonText}>Follow</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  ...styles.interactButton,
-                  backgroundColor: 'white',
-                  borderWidth: 2,
-                  borderColor: '#4b7bec',
-                }}
-              >
-                <Text
-                  style={{ ...styles.interactButtonText, color: '#4b7bec' }}
+            {
+              currentProfile.username !== auth.userInfo.profile.username && (<View style={styles.interactButtonsView}>
+                <TouchableOpacity style={styles.interactButton}>
+                  <Text style={styles.interactButtonText}>Follow</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    ...styles.interactButton,
+                    backgroundColor: 'white',
+                    borderWidth: 2,
+                    borderColor: '#4b7bec',
+                  }}
                 >
-                  Message
-                </Text>
-              </TouchableOpacity>
-            </View>
+                  <Text
+                    style={{ ...styles.interactButtonText, color: '#4b7bec' }}
+                  >
+                    Message
+                  </Text>
+                </TouchableOpacity>
+              </View>)
+            }
+
 
             {/* Mutual Followed By Text */}
             <View style={{ paddingHorizontal: 25, marginTop: 10 }}>
@@ -177,17 +218,20 @@ const LoadResult = (showContent)=>{
             </View>
           </View>
 
-          <View style={{marginTop:30}}>
-                {
-                  posts.map((post)=>(
-                    <Post post={post}/>
-                  ))
-                }
-          </View>
-    
-            
+          <View style={{ marginTop: 20, backgroundColor: "#1f1f1f" }}>
+            {
+              posts.map((post) => (
+                <View style={{ marginBottom: 7, backgroundColor: "#1f1f1f", borderRadius: 10, marginHorizontal: 10 }}>
+                  <Post post={post} />
 
-            {/**
+                </View>
+              ))
+            }
+          </View>
+
+
+
+          {/**
               {showContent === 'posts' ? (
                 
                 posts.map((post)=>{
@@ -202,7 +246,7 @@ const LoadResult = (showContent)=>{
                 <Text>Tags</Text>
               )}*/}
 
-      
+
 
         </View>
 

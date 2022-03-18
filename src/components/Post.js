@@ -12,7 +12,7 @@ function Post({ post, navigation }) {
     const [react, setReact] = useState('')
     const [likeNo,setLikeNo] = useState()
     const [dislikeNo,setDislikeNo] = useState()
-    console.log(post);
+    // console.log(post);
     const route = useRoute();
     // console.log(route);
     const {
